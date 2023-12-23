@@ -9,6 +9,8 @@ public class Main {
         Scanner input = new Scanner(System.in);
         ArrayList<Animal> zoo = readData();
         ArrayList<Staff> staffList = readStaffData();
+        ArrayList<Enclosure> enclosures = readEnclosureData();
+
 
 
         while (true) {
@@ -24,7 +26,7 @@ public class Main {
             } else if (choice.equals("2")) {
                 manageStaff(input, staffList);
             } else if (choice.equals("3")) {
-                manageEnclosures();
+                manageEnclosures(input, enclosures,zoo); // 注意这里将zoo传递给manageEnclosures方法
             } else if (choice.equals("4")) {
                 writeData(zoo);
                 break;
@@ -125,11 +127,107 @@ public class Main {
         System.out.println();
     }
 
-        private static void manageEnclosures() {
-            // 圈舍管理的程式碼
-            // 可以是你的圈舍管理功能
+    private static void manageEnclosures(Scanner input, ArrayList<Enclosure> enclosures, ArrayList<Animal> zoo) {
+        while (true) {
+            System.out.println("1. 新增柵欄");
+            System.out.println("2. 將動物新增到柵欄");
+            System.out.println("3. 將動物從柵欄移除");
+            System.out.println("4. 列印柵欄列表");
+            System.out.println("5. 上一頁");
+            String option = input.nextLine();
+
+            if (option.equals("1")) {
+                addEnclosure(input, enclosures);
+            } else if (option.equals("2")) {
+                addAnimalToEnclosure(input, zoo, enclosures);
+            } else if (option.equals("3")) {
+                removeAnimalFromEnclosure(input, enclosures);
+            } else if (option.equals("4")) {
+                printEnclosureList(enclosures);
+            } else if (option.equals("5")) {
+                // 可以在這裡寫入柵欄資料到文件中，如果需要的話
+                break;
+            } else {
+                System.out.println("請輸入有效的選項。");
+            }
+        }
+        writeData(zoo);
+        writeEnclosureData(enclosures); // 保存柵欄数据
+    }
+    private static void removeAnimalFromEnclosure(Scanner input, ArrayList<Enclosure> enclosures) {
+        System.out.print("請輸入動物名字: ");
+        String animalName = input.nextLine();
+
+        for (Enclosure enclosure : enclosures) {
+            for (Animal animal : enclosure.animals) {
+                if (animal.name.equals(animalName)) {
+                    enclosure.removeAnimal(animal);
+                    System.out.println("已從柵欄移除動物 " + animalName);
+                    return;
+                }
+            }
+        }
+        System.out.println("未找到名為 " + animalName + " 的動物或動物不在任何柵欄中。");
+    }
+    private static void addAnimalToEnclosure(Scanner input, ArrayList<Animal> zoo, ArrayList<Enclosure> enclosures) {
+        System.out.print("請輸入動物名字: ");
+        String animalName = input.nextLine();
+
+        Animal animalToAdd = null;
+
+        for (Animal animal : zoo) {
+            if (animal.name.equals(animalName)) {
+                animalToAdd = animal;
+                break;
+            }
         }
 
+        if (animalToAdd != null) {
+            System.out.print("請輸入要新增到的柵欄名稱: ");
+            String enclosureName = input.nextLine();
+
+            Enclosure targetEnclosure = null;
+
+            for (Enclosure enclosure : enclosures) {
+                if (enclosure.getName().equals(enclosureName)) {
+                    targetEnclosure = enclosure;
+                    break;
+                }
+            }
+
+            if (targetEnclosure != null) {
+                if (targetEnclosure.getCapacity() > targetEnclosure.animals.size()) {
+                    targetEnclosure.addAnimal(animalToAdd);
+                    System.out.println("已將動物 " + animalName + " 新增到柵欄 " + enclosureName + " 中。");
+                } else {
+                    System.out.println("柵欄已滿，無法新增動物到 " + enclosureName + "，請選擇其他柵欄。");
+                }
+            } else {
+                System.out.println("未找到名為 " + enclosureName + " 的柵欄。");
+            }
+        } else {
+            System.out.println("未找到名為 " + animalName + " 的動物。");
+        }
+    }
+    private static void addEnclosure(Scanner input, ArrayList<Enclosure> enclosures) {
+        System.out.print("請輸入柵欄名稱: ");
+        String enclosureName = input.nextLine(); // 要求輸入柵欄名稱
+        System.out.print("請輸入柵欄容量: ");
+        int capacity = Integer.parseInt(input.nextLine());
+
+        Enclosure enclosure = new Enclosure(enclosureName, capacity); // 創建帶有名稱的柵欄
+        enclosures.add(enclosure);
+        System.out.println("已成功新增柵欄 " + enclosureName + "，容量為 " + capacity + "。");
+    }
+
+    private static void printEnclosureList(ArrayList<Enclosure> enclosures) {
+        System.out.println("柵欄列表：");
+        for (Enclosure enclosure : enclosures) {
+            System.out.println(enclosure.getName() + " - 容量: " + enclosure.getCapacity() +
+                    ", 目前動物數量: " + enclosure.animals.size());
+        }
+        System.out.println();
+    }
 
 
 
@@ -201,6 +299,44 @@ public class Main {
             System.out.println("無法寫入員工資料。");
         }
     }
+    private static ArrayList<Enclosure> readEnclosureData() {
+        ArrayList<Enclosure> enclosures = new ArrayList<>();
+        try {
+            Scanner fileIn = new Scanner(new File("enclosure_data.txt"));
+            while (fileIn.hasNext()) {
+                String raw = fileIn.nextLine();
+                String[] arr = raw.split(",");
+                String enclosureName = arr[0]; // 第一项是容量
+                int capacity = Integer.parseInt(arr[1]); // 第一项是容量
+                //String enclosureName = ""; // 定义柵欄名稱变量
+                // 检查是否有足够的数据来获取柵欄名稱
+                if (arr.length > 1) {
+                    enclosureName = arr[0];
+                }
+                // 创建柵欄并添加到列表中
+                Enclosure enclosure = new Enclosure(enclosureName, capacity);
+                enclosures.add(enclosure);
+            }
+            fileIn.close();
+        } catch (IOException e) {
+            System.out.println("柵欄資料文件不存在或發生錯誤。");
+        }
+        return enclosures;
+    }
+
+    private static void writeEnclosureData(ArrayList<Enclosure> enclosures) {
+        try {
+            PrintWriter fileOut = new PrintWriter("enclosure_data.txt");
+            for (Enclosure enclosure : enclosures) {
+                // 将柵欄容量写入文件
+                fileOut.println(enclosure.getName() + "," + enclosure.getCapacity());
+            }
+            fileOut.close();
+        } catch (IOException e) {
+            System.out.println("無法寫入柵欄資料。");
+        }
+    }
+
 
     private static Animal newAnimal(Scanner input) {
         System.out.print("請輸入動物名字: ");

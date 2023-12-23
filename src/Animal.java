@@ -1,7 +1,8 @@
-class Animal {
+public class Animal {
     String name;
     int age;
     String healthStatus;
+    Enclosure enclosure;  // 新增柵欄屬性
 
     public Animal(String name, int age, String healthStatus) {
         this.name = name;
@@ -9,10 +10,15 @@ class Animal {
         this.healthStatus = healthStatus;
     }
 
-    public void displayInfo() {
-        System.out.println("Animal: " + name + ", Age: " + age + ", Health: " +
-                healthStatus);
+    public void setEnclosure(Enclosure enclosure) {
+        this.enclosure = enclosure;
     }
+
+    public void displayInfo() {
+        System.out.println("動物名字: " + name + ", 年齡: " + age + ", 健康狀態: " + healthStatus +
+                (enclosure != null ? ", 柵欄: " + enclosure.getCapacity() : ""));
+    }
+
 
     public void feed(String food) {
         System.out.println(name + " 正在吃 " + food + "。");
@@ -24,14 +30,17 @@ class Animal {
 }
 
 class Mammal extends Animal {
-    public Mammal(String name, int age, String healthStatus) { super(name, age, healthStatus);
+    public Mammal(String name, int age, String healthStatus) {
+        super(name, age, healthStatus);
     }
 }
 class Bird extends Animal {
-    public Bird(String name, int age, String healthStatus) { super(name, age, healthStatus);
+    public Bird(String name, int age, String healthStatus) {
+        super(name, age, healthStatus);
     }
 }
 class Reptile extends Animal {
-    public Reptile(String name, int age, String healthStatus) { super(name, age, healthStatus);
+    public Reptile(String name, int age, String healthStatus) {
+        super(name, age, healthStatus);
     }
 }
