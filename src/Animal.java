@@ -1,13 +1,16 @@
 public class Animal {
+    String categoryChoice;
     String name;
     int age;
     String healthStatus;
     Enclosure enclosure;  // 新增柵欄屬性
 
-    public Animal(String name, int age, String healthStatus) {
+    public Animal(String name, int age, String healthStatus,String categoryChoice) {
+
         this.name = name;
         this.age = age;
         this.healthStatus = healthStatus;
+        this.categoryChoice = categoryChoice;
     }
 
     public void setEnclosure(Enclosure enclosure) {
@@ -24,23 +27,23 @@ public class Animal {
         System.out.println(name + " 正在吃 " + food + "。");
     }
 
-    public void move(String targetArea) {
-        System.out.println(name + " 正在移動到 " + targetArea + "。");
-    }
+
 }
 
 class Mammal extends Animal {
-    public Mammal(String name, int age, String healthStatus) {
-        super(name, age, healthStatus);
+    public Mammal(String name, int age, String healthStatus,String categoryChoice) {
+        super(name, age, healthStatus,categoryChoice);
     }
 }
 class Bird extends Animal {
-    public Bird(String name, int age, String healthStatus) {
-        super(name, age, healthStatus);
+    public Bird(String name, int age, String healthStatus,String categoryChoice) {
+        super(name, age, healthStatus,categoryChoice);
     }
 }
 class Reptile extends Animal {
-    public Reptile(String name, int age, String healthStatus) {
-        super(name, age, healthStatus);
+    public Reptile(String name, int age, String healthStatus,String categoryChoice) {
+        super(name, age, healthStatus,categoryChoice);
     }
 }
+
+

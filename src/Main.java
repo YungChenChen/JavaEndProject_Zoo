@@ -38,12 +38,11 @@ public class Main {
 
     private static void manageAnimals(Scanner input, ArrayList<Animal> zoo) {
         while (true) {
-            System.out.println("1. 添加動物");
+            System.out.println("1. 新增動物");
             System.out.println("2. 移除動物");
             System.out.println("3. 餵食動物");
-            System.out.println("4. 移動動物");
-            System.out.println("5. 列印動物列表");
-            System.out.println("6. 上一頁");
+            System.out.println("4. 列印動物列表");
+            System.out.println("5. 上一頁");
             String option = input.nextLine();
 
             if (option.equals("1")) {
@@ -53,10 +52,8 @@ public class Main {
             } else if (option.equals("3")) {
                 feedAnimals(input, zoo);
             } else if (option.equals("4")) {
-                moveAnimal(input, zoo);
-            } else if (option.equals("5")) {
                 printAnimalList(zoo);
-            } else if (option.equals("6")) {
+            } else if (option.equals("5")) {
                 break;
             } else {
                 System.out.println("請輸入有效的選項。");
@@ -235,30 +232,48 @@ public class Main {
     private static ArrayList<Animal> readData() {
         ArrayList<Animal> zoo = new ArrayList<>();
         try {
-            Scanner fileIn = new Scanner(new File("data.txt"));
+            Scanner fileIn = new Scanner(new File("zoo_data.txt"));
+            while (fileIn.hasNextLine()) {
+                String raw = fileIn.nextLine();
+                if (raw.trim().isEmpty()) {
+                    continue; // 跳过空行
+                }
+                String[] arr = raw.split(",");
+                Animal animal = new Animal(arr[0], Integer.parseInt(arr[1]), arr[2], arr[3]);
+                zoo.add(animal);
+            }
+            fileIn.close();
+        } catch (IOException e) {
+            System.out.println("动物园数据文件不存在。");
+        }
+
+     /*   try {
+            Scanner fileIn = new Scanner(new File("zoo_data.txt"));
             while (fileIn.hasNext()) {
                 // 逐行讀取動物資料
                 String raw = fileIn.nextLine();
                 // 使用逗號分隔動物資料
                 String[] arr = raw.split(",");
                 // 第一項是動物名字
-                Animal animal = new Animal(arr[0], Integer.parseInt(arr[1]), arr[2]);
+                Animal animal = new Animal(arr[0], Integer.parseInt(arr[1]), arr[2],arr[3]);
                 // 添加到動物園
                 zoo.add(animal);
             }
             fileIn.close();
         } catch (IOException e) {
             System.out.println("動物園資料文件不存在。");
-        }
+        }*/
         return zoo;
     }
 
     private static void writeData(ArrayList<Animal> zoo) {
         try {
             PrintWriter fileOut = new PrintWriter("zoo_data.txt");
+
             for (Animal animal : zoo) {
                 // 添加動物資訊到文件中
-                fileOut.println(animal.name + "," + animal.age + "," + animal.healthStatus);
+
+                fileOut.println(animal.name + "," + animal.age + "," + animal.healthStatus + "," + animal.categoryChoice);
             }
             fileOut.close();
         } catch (IOException e) {
@@ -337,17 +352,84 @@ public class Main {
         }
     }
 
-
+    ////////////
     private static Animal newAnimal(Scanner input) {
+        System.out.println("請選擇動物類別：");
+        System.out.println("1. 哺乳動物");
+        System.out.println("2. 鳥類");
+        System.out.println("3. 爬行動物");
+        String categoryChoice = input.nextLine();
         System.out.print("請輸入動物名字: ");
         String name = input.nextLine();
         System.out.print("請輸入動物年齡: ");
         int age = Integer.parseInt(input.nextLine());
         System.out.print("請輸入動物健康狀態: ");
         String healthStatus = input.nextLine();
-        return new Animal(name, age, healthStatus);
+
+        if(categoryChoice.equals("1")) {
+            categoryChoice = "哺乳動物";
+        } else if (categoryChoice.equals("2")) {
+            categoryChoice = "鳥類";
+        } else if (categoryChoice.equals("3")) {
+            categoryChoice = "爬行動物";
+        }
+
+        return new Animal(name, age, healthStatus,categoryChoice);
+    }
+    class Mammal extends Animal {
+        public Mammal(String name, int age, String healthStatus,String categoryChoice) {
+            super(name, age, healthStatus,categoryChoice);
+        }
+    }
+    class Bird extends Animal {
+        public Bird(String name, int age, String healthStatus,String categoryChoice) {
+            super(name, age, healthStatus,categoryChoice);
+        }
+    }
+    class Reptile extends Animal {
+        public Reptile(String name, int age, String healthStatus,String categoryChoice) {
+            super(name, age, healthStatus,categoryChoice);
+        }
     }
 
+
+
+/*
+    private static Animal newAnimal(Scanner input) {
+        System.out.println("請選擇動物類別：");
+        System.out.println("1. 哺乳動物");
+        System.out.println("2. 鳥類");
+        System.out.println("3. 爬行動物");
+        String categoryChoice = input.nextLine();
+        System.out.print("請輸入動物名字: ");
+        String name = input.nextLine();
+        System.out.print("請輸入動物年齡: ");
+        int age = Integer.parseInt(input.nextLine());
+        System.out.print("請輸入動物健康狀態: ");
+        String healthStatus = input.nextLine();
+
+        switch (categoryChoice) {
+            case "1":
+                categoryChoice = "哺乳動物";
+                newAnimal = new Mammal(name, age, healthStatus,categoryChoice);
+                break;
+            case "2":
+                categoryChoice = "鳥類";
+                newAnimal = new Bird(name, age, healthStatus,categoryChoice);
+                break;
+            case "3":
+                categoryChoice = "爬行動物";
+               // newAnimal = new Reptile(name, age, healthStatus,categoryChoice);
+                break;
+            default:
+                System.out.println("無效的選擇，將創建一般動物。");
+                //newAnimal = new Animal(name, age, healthStatus,categoryChoice);
+                break;
+        }
+
+        zoo.add(newAnimal);
+      //  System.out.println("已添加新动物：" + name);
+    }*/
     private static void removeAnimal(Scanner input, ArrayList<Animal> zoo) {
         System.out.print("請輸入要移除的動物名字: ");
         String animalName = input.nextLine();
@@ -370,20 +452,7 @@ public class Main {
         }
     }
 
-    private static void moveAnimal(Scanner input, ArrayList<Animal> zoo) {
-        System.out.print("請輸入要移動的動物名字: ");
-        String animalName = input.nextLine();
-        for (Animal animal : zoo) {
-            if (animal.name.equals(animalName)) {
-                System.out.print("請輸入目標區域: ");
-                String targetArea = input.nextLine();
-                // 可以將移動的邏輯加入到新的Animal類別中
-                animal.move(targetArea);
-                return;
-            }
-        }
-        System.out.println("未找到名為 " + animalName + " 的動物。");
-    }
+
 
     private static void printAnimalList(ArrayList<Animal> zoo) {
         System.out.println("動物列表：");

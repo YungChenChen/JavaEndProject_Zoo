@@ -1,2 +1,0 @@
-ycc,90,good
-ke,16,bad

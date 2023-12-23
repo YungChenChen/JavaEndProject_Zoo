@@ -1,2 +1,3 @@
-ycc,90,good
-ke,16,bad
+ycc,20,good,哺乳動物
+birdy,3,ok,鳥類
+gorilla,6,healthy,哺乳動物
